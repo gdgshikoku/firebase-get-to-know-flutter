@@ -1,0 +1,22 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2022-02-23T06:36:08Z",
+  "id": "firebase-get-to-know-flutter#5",
+  "duration": 0,
+  "title": "",
+  "authors": "K.Inoue",
+  "summary": "",
+  "source": "1lXKcvoL_kyHbGkJNmegm9-jk_xp7lj78M3hdwN8TMkQ",
+  "theme": "flutter-firebase",
+  "status": [
+    "draft"
+  ],
+  "category": [
+    "Flutter Firebase"
+  ],
+  "tags": [],
+  "url": "firebase-get-to-know-flutter#5"
+}

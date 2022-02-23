@@ -1,0 +1,1147 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="firebase-get-to-know-flutter#5"
+                  title=""
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="始める前に" duration="0">
+        <p>このコードラボでは、 Android と iOS のための Flutter モバイルアプリを作成するために、 <a href="https://firebase.google.com/" target="_blank">Firebase</a> のいくつかの基本を学びましょう。<br></p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 is-upgraded>前提条件</h2>
+<p>このコードラボは、あなたが Flutterに慣れていて、<a href="https://docs.flutter.dev/get-started/install" target="_blank">Flutter SDK</a>と<a href="https://docs.flutter.dev/get-started/editor" target="_blank">エディター</a>をインストールしていることを仮定しています。</p>
+<h2 is-upgraded><br>作成するもの</h2>
+<p><br>このコードラボでは、Flutterを使用して、Android、iOS、Web、およびmacOS上でイベントRSVP（参加登録）およびゲストブックチャットアプリを構築します。 Firebase認証でユーザーを認証し、Cloud Firestoreを使用してデータを同期します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/c62416352b641c75.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/71935c62efd2aeb5.png"></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/73245a514a97e5a6.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/ace882b7591fe799.png"></p>
+</td></tr>
+</table>
+<h2 is-upgraded>必要なもの</h2>
+<p><br><br>このコードラボは、次のデバイスのいずれかを使用して実行できます。<br></p>
+<ul>
+<li>コンピューターに接続され、開発者モードに設定されている物理デバイス（AndroidまたはiOS）。</li>
+<li>iOSシミュレーター。 （<a href="https://apps.apple.com/us/app/xcode/id497799835" target="_blank">Xcode</a>ツールのインストールが必要です。）</li>
+<li>Androidエミュレーター。 （<a href="https://developer.android.com/studio/install" target="_blank">Android Studio</a> のセットアップが必要です。）</li>
+</ul>
+<p>上記に加えて、次のものも必要になります。</p>
+<ul>
+<li>Chromeなどの任意のブラウザ。</li>
+<li>Dart と Flutter プラグインが設定された <a href="https://developer.android.com/studio" target="_blank">Android Studio</a> または <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>など、お好みのIDEやテキストエディタ。</li>
+<li>最新stableバージョンの<a href="https://docs.flutter.dev/get-started/web#set-up" target="_blank">Flutter</a>（または、あなたが最先端の技術に触れたいなら beta版でも可）。</li>
+<li>Firebaseプロジェクトを作成および管理するためのGmailアカウントなどのGoogleアカウント。</li>
+<li>Gmailアカウントにログインしている <a href="https://firebase.google.com/docs/cli" target="_blank">firebaseコマンドラインツール</a>。</li>
+<li>codelabのサンプルコード。コードを取得する方法については、次の手順を参照してください。</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="サンプルコードを入手する" duration="0">
+        <p>GitHubからプロジェクトの初期バージョンをダウンロードすることから始めましょう。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://github.com/flutter/codelabs" target="_blank">GitHubのリポジトリ</a>をコマンドラインから clone します。：</p>
+<pre><code>git clone https://github.com/flutter/codelabs.git flutter-codelabs</code></pre>
+<p>もしくは、あなたが<a href="https://github.com/cli/cli" target="_blank">GitHubでのCLI</a>ツールをインストールしている場合：</p>
+<pre><code>gh repo clone flutter/codelabs flutter-codelabs</code></pre>
+<p>サンプルコードは、codelab の collection のコードを含む <code>flutter-codelabs</code> ディレクトリに clone する必要があります。このコードラボのコードは <code>flutter-codelabs/firebase-get-to-know-flutter</code> にあります。</p>
+<p><code>flutter-codelabs/firebase-get-to-know-flutter</code>の下のディレクトリ構造は、それぞれの名前付きステップの最終形の一連のスナップショットです。これはステップ2であるため、一致するファイルを見つけるのはとても簡単です。</p>
+<pre><code>cd flutter-codelabs/firebase-get-to-know-flutter/step_02</code></pre>
+<p>先にスキップしたい場合、またはステップの後にどのように見えるかを確認したい場合は、関心のあるステップにちなんだ名前が付けられたディレクトリを調べてください。</p>
+<h2 is-upgraded>スターターアプリをインポートする</h2>
+<p><code>flutter-codelabs/firebase-get-to-know-flutter/step_02</code> ディレクトリをお好みの IDE で開くかインポートしてください。このディレクトリには、まだ機能していないFlutter meetupアプリからなるcodelabのスタートコードが含まれています。</p>
+<h2 is-upgraded>作業するファイルを見つけます</h2>
+<p>このアプリのコードは複数のディレクトリに分散しています。この機能の分割は、コードを機能ごとにグループ化することにより、作業を容易にするように設計されています。</p>
+<p>プロジェクトで次のファイルを見つけます。</p>
+<ul>
+<li><code>lib/main.dart</code> ：このファイルは、メインエントリポイントとアプリケーションのウィジェットが含まれています。</li>
+<li><code>lib/src/widgets.dart</code> ：このファイルは、アプリケーションのスタイルを標準化するためのいくつかのウィジェットが含まれています。これらの widget は、スターターアプリの画面を構成するために使用されます。</li>
+<li><code>lib/src/authentication.dart</code> ：このファイルは、 Firebase email に基づいたユーザーログイン認証の実験を作成する widget 集合の <a href="https://firebase.google.com/docs/auth" target="_blank">FirebaseUI Auth</a> の部分的な実装を含んでいます。これらの認証フロー用ウィジェットは、スターターアプリではまだ使用されていませんが、すぐに使えるようにします。</li>
+</ul>
+<p>アプリケーションの残りの部分を構築するために、必要に応じてファイルを追加します。</p>
+<h2 is-upgraded>lib/main.dartファイルをレビューしましょう</h2>
+<p>このアプリでは、<a href="https://pub.dev/packages/google_fonts" target="_blank"><code>google_fonts</code></a> パッケージを利用して、アプリ全体のデフォルトフォントを Roboto にすることができます。やる気のある読者には、<a href="https://fonts.google.com/" target="_blank">fonts.google.com</a>を探索し、そこで見つけたフォントをアプリのさまざまな部分で使ってみるという練習をしてもらうとよいでしょう。</p>
+<p><code>lib/src/widgets.dart</code> にある <code>Header</code>、<code>Paragraph</code>、<code>IconAndDetail</code> という形式のヘルパーウィジェットを利用しています。これらのウィジェットは、重複するコードを排除することで、<code>HomePage</code>に書かれたページレイアウトの乱雑さを軽減します。これは、一貫したルック＆フィールを可能にするという付加的な利点もあります。</p>
+<p>Android、iOS、Web、macOSでのアプリの外観は次のとおりです。</p>
+<h3 is-upgraded>アプリのプレビュー</h3>
+<table>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/9fd9346e7c12430b.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/b3d8b115d6e299fa.png"></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/a954c360597eb22c.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/29f9a966c92e63a0.png"></p>
+</td></tr>
+</table>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Firebaseプロジェクトを作成してセットアップする" duration="0">
+        <p>イベント情報を表示することはゲストにとっては素晴らしいことですが、イベントを表示するだけでは誰にとってもあまり役に立ちません。このアプリにいくつかの動的機能を追加しましょう。このためには、Firebaseをアプリに接続する必要があります。 Firebaseの使用を開始するには、Firebaseプロジェクトを作成してセットアップする必要があります。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 is-upgraded>Firebaseプロジェクトを作成する</h2>
+<ol type="1" start="1">
+<li><a href="https://console.firebase.google.com/" target="_blank">Firebase</a>にサインイン 。</li>
+<li>Firebaseコンソールで、&#34;Add Project&#34; をクリックしましょう（またはCreate a project）、そしてあなたのFirebaseプロジェクトに &#34;Firebase-Flutter-Codelab&#34; という名前を付けます。</li>
+</ol>
+<p class="image-container"><img alt="4395e4e67c08043a.png" style="width: 601.70px" src="img/4395e4e67c08043a.png"></p>
+<ol type="1" start="3">
+<li>プロジェクト作成オプションをクリックします。プロンプトが表示されたら、Firebaseの利用規約に同意します。このアプリではアナリティクスを使用しないため、Googleアナリティクスの設定はスキップしてください。</li>
+</ol>
+<p class="image-container"><img alt="b7138cde5f2c7b61.png" style="width: 601.70px" src="img/b7138cde5f2c7b61.png"></p>
+<p>Firebaseプロジェクトの詳細については、<a href="https://firebase.google.com/docs/projects/learn-more" target="_blank">Understand Firebase projects</a>を参照してください。</p>
+<p>ここで作成しているアプリは、ウェブアプリで利用できるいくつかのFirebase製品を使用しています。</p>
+<ul>
+<li>ユーザーが自分のアプリにサインインすることを可能にする <strong>Firebase認証</strong>。</li>
+<li>クラウド上の構造化データを保存し、データの変更の通知を即座に取得するための &#34;<strong>Cloud Firestore</strong>&#34;。</li>
+<li>データベースを保護する &#34;<strong>Firebase Security Rules</strong>&#34;。</li>
+</ul>
+<p>これらの製品の一部は、特別な設定が必要であるか、Firebaseコンソールを使用して有効にする必要があります。</p>
+<h2 is-upgraded>電子メールによるFirebase認証サインインの有効化</h2>
+<p>ユーザーがウェブアプリにログインできるようにするために、このコードラボでは電子メール/パスワード方式を使用します：</p>
+<ol type="1" start="1">
+<li>Firebaseコンソールで、左側のパネルの [<strong>Build</strong>] メニューを展開します。</li>
+<li>[<strong>Authentication</strong>]をクリックし、[<strong>Get Started</strong>]ボタンをクリック、そして [<strong>Sign-in method</strong>] （または<a href="https://console.firebase.google.com/project/_/authentication/providers" target="_blank">こちらをクリック</a>すると、[<strong>Sign-in method</strong>] タブに直接移動します）。</li>
+<li>[<strong>Sign-in providers</strong>]リストで[<strong>Email/Password</strong>]をクリックし、[<strong>Enable</strong>] スイッチをオンの位置にし、そして[<strong>Save</strong>]をクリックします。 <img alt="58e3e3e23c2f16a4.png" style="width: 601.70px" src="img/58e3e3e23c2f16a4.png"></li>
+</ol>
+<h2 is-upgraded>Cloud Firestoreを有効にする</h2>
+<p>ウェブアプリは、チャットメッセージを保存し、新しいチャットメッセージを受信する <a href="https://firebase.google.com/docs/firestore/" target="_blank">Cloud Firestore</a>を使用します。</p>
+<p>Cloud Firestoreを有効にする：</p>
+<ol type="1" start="1">
+<li>Firebaseコンソールの[<strong>Build</strong>]セクションで、[<strong>Cloud Firestore</strong>]をクリックします。</li>
+<li>[<strong>Create database</strong>]をクリックします。 <img alt="99e8429832d23fa3.png" style="width: 601.70px" src="img/99e8429832d23fa3.png"></li>
+</ol>
+<aside class="special"><p><strong>重要：</strong>このコードラボでは、 Realtime Database ではなく、 Cloud Firestore を有効にしてください。二つの違いを理解するには、<a href="https://firebase.google.com/docs/database/rtdb-vs-firestore" target="_blank">このページ</a>を参照してください。</p>
+</aside>
+<ol type="1" start="3">
+<li>[<strong>Start in test mode</strong>]オプションを選択します。セキュリティルールに関する免責事項をお読みください。テストモードは、開発中にデータベースに自由に書き込むことを保証します。 [<strong>Next</strong>]をクリックします。 <img alt="6be00e26c72ea032.png" style="width: 601.70px" src="img/6be00e26c72ea032.png"><br></li>
+</ol>
+<aside class="warning"><p><strong>注意：</strong>このコードラボの最初の段階では、あなたはテストモードを使用しています。ただし、コードラボの後半で、データベースを保護するための Firebase Security Rules を作成します。</p>
+<p>アプリ、特に本番アプリの場合、セキュリティルールを使用してデータベースを保護することが非常に重要です。セキュリティルールの詳細情報は<a href="https://firebase.google.com/docs/rules" target="_blank">Firebaseドキュメント</a> で説明されています。</p>
+</aside>
+<ol type="1" start="4">
+<li>データベースの場所を選択します（デフォルトのままでも使用できます）。この場所は後で変更できないことに注意してください。 <img alt="278656eefcfb0216.png" style="width: 601.70px" src="img/278656eefcfb0216.png"></li>
+<li>[<strong>Enable</strong>]をクリックします。</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Firebaseの設定" duration="0">
+        <aside class="special"><p><strong>ヒント：</strong>あなたがiOSやAndroidのみを使用する場合には、次のいずれかの設定を行う必要があります。ここでは念のため両方の手順を説明します。</p>
+</aside>
+<p>FlutterでFirebaseを使用するには、FlutterプロジェクトがFlutterFireライブラリを正しく利用できるように以下のプロセスに従う必要があります。</p>
+<ul>
+<li>FlutterFireの依存関係をプロジェクトに追加します</li>
+<li>Firebaseプロジェクトに目的のプラットフォームを登録します</li>
+<li>プラットフォーム固有の構成ファイルをダウンロードして、コードに追加します。</li>
+</ul>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<aside class="warning"><p><strong>重要：</strong>あなたは同じFirebaseプロジェクト内で使用したいプラットフォームをすべて登録する必要があります。</p>
+</aside>
+<p>あなたの Flutter アプリのトップレベルのディレクトリでは、<code>android</code> 、 <code>ios</code> 、 <code>macos</code>と<code>web</code> というサブディレクトリがあります。これらのディレクトリは、それぞれiOSとAndroidのプラットフォーム固有の設定ファイルを保持します。</p>
+<h2 is-upgraded>依存関係を設定する</h2>
+<p>このアプリで使用している2つのFirebase製品（Firebase AuthとCloud Firestore）のために FlutterFireライブラリを追加する必要があります。次の3つのコマンドを実行して、依存関係を追加します。</p>
+<pre><code>$ flutter pub add firebase_core
+Resolving dependencies...
++ firebase_core 1.10.5
++ firebase_core_platform_interface 4.2.2
++ firebase_core_web 1.5.2
++ flutter_web_plugins 0.0.0 from sdk flutter
++ js 0.6.3
+  test_api 0.4.3 (0.4.8 available)
+Changed 5 dependencies!</code></pre>
+<p><a href="https://pub.dev/packages/firebase_core" target="_blank"><code>firebase_core</code></a>はすべてのFirebase Flutter プラグインに必要な共通のコードです。</p>
+<pre><code>$ flutter pub add firebase_auth
+Resolving dependencies...
++ firebase_auth 3.3.3
++ firebase_auth_platform_interface 6.1.8
++ firebase_auth_web 3.3.4
++ intl 0.17.0
+  test_api 0.4.3 (0.4.8 available)
+Changed 4 dependencies!</code></pre>
+<p><a href="https://pub.dev/packages/firebase_auth" target="_blank"><code>firebase_auth</code></a> はFirebase 認証機能との統合を可能にします。</p>
+<pre><code>$ flutter pub add cloud_firestore
+Resolving dependencies...
++ cloud_firestore 3.1.4
++ cloud_firestore_platform_interface 5.4.9
++ cloud_firestore_web 2.6.4
+  test_api 0.4.3 (0.4.8 available)
+Changed 3 dependencies!</code></pre>
+<p><a href="https://pub.dev/packages/cloud_firestore" target="_blank"><code>cloud_firestore</code></a>はCloud Firestoreデータストレージへのアクセスを可能にします。</p>
+<pre><code>$ flutter pub add provider
+Resolving dependencies...
++ nested 1.0.0
++ provider 6.0.1
+  test_api 0.4.3 (0.4.8 available)
+Changed 2 dependencies!</code></pre>
+<p>必要なパッケージを追加すると同時に、Firebaseで適切に利用できるようにiOS、Android、macOS、およびWebランナーの各プロジェクトを構成する必要があります。また、表示ロジックからビジネスロジックの分離を可能にする<a href="https://pub.dev/packages/provider" target="_blank"><code>provider</code></a>パッケージも使用します。</p>
+<h2 is-upgraded>flutterfire のインストール</h2>
+<ol type="1" start="1">
+<li>FlutterFire CLIは、基盤となるFirebase CLIに依存します。<a href="https://firebase.google.com/docs/cli" target="_blank">Firebase CLI</a> の最新バージョンのインストールまたはアップデートを行ってない場合は、行ってください。</li>
+<li>次は、次のコマンドを実行してFlutterFire CLIをインストールしてください。</li>
+</ol>
+<pre><code>$ dart pub global activate flutterfire_cli</code></pre>
+<p>インストール後、 <code>flutterfire</code>コマンドは、グローバルに利用できるようになります。</p>
+<h2 is-upgraded>アプリの設定</h2>
+<p>CLIは、Firebaseプロジェクトと選択したプロジェクトアプリケーションから情報を抽出して、特定のプラットフォームのすべての設定を生成します。</p>
+<p>アプリケーションのルートで、configureコマンドを実行します。</p>
+<pre><code>$ flutterfire configure</code></pre>
+<p>configure コマンドは、いくつかのプロセスをガイドします。</p>
+<ol type="1" start="1">
+<li>Firebaseプロジェクトの選択（.firebasercファイルまたはFirebaseコンソールを基にします）。</li>
+<li>あなたが構成したいプラットフォーム（Android、iOS、macOS、Webなど）を入力します。</li>
+<li>選択したプラットフォームのFirebaseアプリケーションに必要とされる設定を抽出します。デフォルトでは、CLIは現在のプロジェクト設定に基づいてFirebaseアプリを自動的にマッチングしようとします。</li>
+<li>プロジェクトでfirebase_options.dartファイルを生成します。</li>
+</ol>
+<h2 is-upgraded>macOSの設定</h2>
+<p>macOSのFlutterは、完全にサンドボックス化されたアプリケーションを構築します。このアプリケーションは、Firebaseサーバーと通信するためにネットワークの使用が統合されているため、ネットワーククライアント権限を使用してアプリケーションを設定する必要があります。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_04/macos/Runner/DebugProfile.entitlements" target="_blank">macos / Runner / DebugProfile.entitlements</a></h3>
+<pre><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+&lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt;
+&lt;plist version=&#34;1.0&#34;&gt;
+&lt;dict&gt;
+        &lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;
+        &lt;true/&gt;
+        &lt;key&gt;com.apple.security.cs.allow-jit&lt;/key&gt;
+        &lt;true/&gt;
+        &lt;key&gt;com.apple.security.network.server&lt;/key&gt;
+        &lt;true/&gt;
+  &lt;!-- Add the following two lines --&gt;
+        &lt;key&gt;com.apple.security.network.client&lt;/key&gt;
+        &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_04/macos/Runner/Release.entitlements" target="_blank">macos / Runner / Release.entitlements</a></h3>
+<pre><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+&lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt;
+&lt;plist version=&#34;1.0&#34;&gt;
+&lt;dict&gt;
+        &lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;
+        &lt;true/&gt;
+  &lt;!-- Add the following two lines --&gt;
+        &lt;key&gt;com.apple.security.network.client&lt;/key&gt;
+        &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+<p>詳しくは<a href="https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox" target="_blank">Entitlements and the App Sandbox</a>をご覧ください。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ユーザーサインインの追加（RSVP）" duration="0">
+        <p>今アプリにFirebaseを追加したので、<a href="https://firebase.google.com/docs/auth" target="_blank">Firebase認証</a>を使って人を登録するRSVPボタンを設置することができます。 Androidネイティブ、iOSネイティブ、およびWebについては、事前にビルドされたFirebaseUI Authパッケージがありますが、Flutterについては、この機能をビルドする必要があります。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>Step 2で取得したプロジェクトには、ほとんどの認証フローのユーザーインターフェースを実装するウィジェットのセットが含まれています。 Firebase Authenticationをアプリケーションに統合するためのビジネスロジックをこれから実装します。</p>
+<h2 is-upgraded>プロバイダーを使ったビジネスロジック</h2>
+<p>これから、Flutter ウィジェットのアプリケーションツリー全体で利用可能にするために、アプリケーションの state object を一元化する<a href="https://pub.dev/packages/provider" target="_blank"><code>provider</code></a> パッケージを使いましょう。開始するには、<code>lib/main.dart</code> の先頭にある import を変更します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_05/lib/main.dart#L1" target="_blank">lib / main.dart</a></h3>
+<pre><code>import &#39;package:firebase_auth/firebase_auth.dart&#39;; // new
+import &#39;package:firebase_core/firebase_core.dart&#39;; // new
+import &#39;package:flutter/material.dart&#39;;
+import &#39;package:google_fonts/google_fonts.dart&#39;;
+import &#39;package:provider/provider.dart&#39;;           // new
+
+import &#39;firebase_options.dart&#39;;                    // new
+import &#39;src/authentication.dart&#39;;                  // new
+import &#39;src/widgets.dart&#39;;</code></pre>
+<p><code>import</code>行はFirebase CoreとAuthを宣言し、アプリケーションの state object を ウィジェットツリーから利用できるように <code>provider</code>パッケージを取り込み、 <code>lib/src</code>  から認証ウィジェットを含めます。</p>
+<p>このアプリケーション state object、 <code>ApplicationState</code> は、このステップでは主に2つの責任を持っていますが、それ以降のステップでアプリケーションにより多くの機能を追加すると、さらに責任を追加することができます。最初の責任は<code>Firebase.initializeApp()</code>を呼び出すことによるFirebaseライブラリを初期化することであり、その後、承認フローの取り扱いがあります。<code>lib/main.dart</code> の最後に以下のクラスを追加します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_05/lib/main.dart#L83" target="_blank">lib / main.dart</a></h3>
+<pre><code>class ApplicationState extends ChangeNotifier {
+  ApplicationState() {
+    init();
+  }
+
+  Future&lt;void&gt; init() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    FirebaseAuth.instance.userChanges().listen((user) {
+      if (user != null) {
+        _loginState = ApplicationLoginState.loggedIn;
+      } else {
+        _loginState = ApplicationLoginState.loggedOut;
+      }
+      notifyListeners();
+    });
+  }
+
+  ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
+  ApplicationLoginState get loginState =&gt; _loginState;
+
+  String? _email;
+  String? get email =&gt; _email;
+
+  void startLoginFlow() {
+    _loginState = ApplicationLoginState.emailAddress;
+    notifyListeners();
+  }
+
+  Future&lt;void&gt; verifyEmail(
+    String email,
+    void Function(FirebaseAuthException e) errorCallback,
+  ) async {
+    try {
+      var methods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (methods.contains(&#39;password&#39;)) {
+        _loginState = ApplicationLoginState.password;
+      } else {
+        _loginState = ApplicationLoginState.register;
+      }
+      _email = email;
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  Future&lt;void&gt; signInWithEmailAndPassword(
+    String email,
+    String password,
+    void Function(FirebaseAuthException e) errorCallback,
+  ) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void cancelRegistration() {
+    _loginState = ApplicationLoginState.emailAddress;
+    notifyListeners();
+  }
+
+  Future&lt;void&gt; registerAccount(
+      String email,
+      String displayName,
+      String password,
+      void Function(FirebaseAuthException e) errorCallback) async {
+    try {
+      var credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user!.updateDisplayName(displayName);
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+    }
+  }
+
+  void signOut() {
+    FirebaseAuth.instance.signOut();
+  }
+}</code></pre>
+<p>このクラスでは、いくつかの重要なポイントに注意する必要があります。ユーザーは認証されていない状態でスタートし、アプリはユーザーのメールアドレスをリクエストするフォームを表示します。そのメールアドレスが登録されているかどうかに応じて、アプリはユーザー登録を求めるか、パスワードをリクエストします。その後、すべてが完了すると、ユーザーは認証済みになります。</p>
+<p>これは、FirebaseUI Authフローの完全な実装ではないことに注意してください。これは、ログインに問題があるユーザーを想定しないためです。この追加機能の実装は、やる気のある読者のための演習として残されています。</p>
+<h2 is-upgraded>認証フローの統合</h2>
+<p>今、あなたは、アプリケーションの状態を初期化し、認証フローを<code>HomePage</code>に追加することができました。<code>provider</code>パッケージを介してアプリケーション state を統合するためにメインエントリポイントを更新しましょう。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_05/lib/main.dart#L10" target="_blank">lib/main.dart</a></h3>
+<pre><code>void main() {
+  // Modify from here
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) =&gt; ApplicationState(),
+      builder: (context, _) =&gt; App(),
+    ),
+  );
+  // to here.
+}</code></pre>
+<p><code>main</code>関数の変更により、provider packageは<code>ChangeNotifierProvider</code>ウィジェットを使用するアプリケーション state object を生成する責任を負うようになりました。アプリケーション state object が<code>ChangeNotifier</code>を拡張し、これにより<code>provider</code>パッケージが依存するウィジェットを再表示するタイミングを知ることができるようにするため、この特定の provider class を使用します。最後に、<code>HomePage</code>の<code>build</code> メソッドを更新してアプリケーションの状態を<code>Authentication</code>と統合します 。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_05/lib/main.dart#L54" target="_blank">lib / main.dart</a></h3>
+<pre><code>class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(&#39;Firebase Meetup&#39;),
+      ),
+      body: ListView(
+        children: &lt;Widget&gt;[
+          Image.asset(&#39;assets/codelab.png&#39;),
+          const SizedBox(height: 8),
+          const IconAndDetail(Icons.calendar_today, &#39;October 30&#39;),
+          const IconAndDetail(Icons.location_city, &#39;San Francisco&#39;),
+          // Add from here
+          Consumer&lt;ApplicationState&gt;(
+            builder: (context, appState, _) =&gt; Authentication(
+              email: appState.email,
+              loginState: appState.loginState,
+              startLoginFlow: appState.startLoginFlow,
+              verifyEmail: appState.verifyEmail,
+              signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+              cancelRegistration: appState.cancelRegistration,
+              registerAccount: appState.registerAccount,
+              signOut: appState.signOut,
+            ),
+          ),
+          // to here
+          const Divider(
+            height: 8,
+            thickness: 1,
+            indent: 8,
+            endIndent: 8,
+            color: Colors.grey,
+          ),
+          const Header(&#34;What we&#39;ll be doing&#34;),
+          const Paragraph(
+            &#39;Join us for a day full of Firebase Workshops and Pizza!&#39;,
+          ),
+        ],
+      ),
+    );
+  }
+}</code></pre>
+<p><br>あなたはAuthenticationウィジェットをインスタンス化し、そしてConsumerウィジェットでラップします。 Consumer ウィジェットは、アプリケーションの状態が変化したときに、ツリーの一部を再構築するためにproviderパッケージを使用する通常の方法です。Authentication ウィジェットは、これからテストする認証UIです。</p>
+<h3 is-upgraded>認証フローのテスト</h3>
+<p class="image-container"><img style="width: 322.50px" src="img/f83cb66b3a570221.png"></p>
+<p>これが認証フローのスタートです。ここで、ユーザーはRSVPボタンをタップして、電子メールフォームを開始できます。</p>
+<p class="image-container"><img style="width: 246.48px" src="img/3cb9776b9de5bf8f.png"></p>
+<p>電子メールを入力すると、システムはユーザーがすでに登録されているかどうかを確認します。登録されている場合はパスワードの入力を求められます。登録されていない場合は、登録フォームに進みます。</p>
+<p class="image-container"><img style="width: 352.71px" src="img/7ab4567beb6f04d7.png"></p>
+<p>エラー処理フローを確認するには、必ず短いパスワード（6文字未満）を入力して試してみてください。ユーザーが登録されている場合は、代わりにパスワードが表示されます。（訳注：パスワード入力欄が表示されることと思われます。）</p>
+<p class="image-container"><img style="width: 294.25px" src="img/fd2d5cf59ff76330.png"></p>
+<p>このページでは、このページのエラー処理を確認するために、間違ったパスワードを入力してください。最後に、ユーザーがログインすると、ユーザーに再度ログアウトする機能を提供するログインエクスペリエンスが表示されます。</p>
+<p class="image-container"><img style="width: 240.29px" src="img/7a8e80ad7dca7666.png"></p>
+<p>これで、認証フローが実装されました。おめでとうございます！</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Cloud Firestoreにメッセージを書き込む" duration="0">
+        <p>ユーザーが来ていることを知っているのは素晴らしいことですが、アプリでゲストに何か他のことをしてもらいましょう。ゲストブックにメッセージを残すことができたらどうでしょうか。彼らは、なぜゲストが来ることを歓迎しているのか、誰に会いたいのかを共有することができます。<br><br></p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>ユーザーがアプリで書くチャットメッセージを格納するには、<a href="https://firebase.google.com/docs/firestore/" target="_blank">Cloud Firestore</a> を使用します。</p>
+<h2 is-upgraded>データ・モデル</h2>
+<p>Cloud FirestoreはNoSQLデータベースであり、データベースに格納されているデータは、コレクション、ドキュメント、フィールド、およびサブコレクションに分割されます。あなたは<code>guestbook</code>と呼ばれるトップレベルのコレクション内の文書としてチャットの各メッセージを格納します 。</p>
+<p class="image-container"><img alt="7c20dc8424bb1d84.png" style="width: 601.70px" src="img/7c20dc8424bb1d84.png"></p>
+<aside class="special"><p>ヒント：Cloud Firestoreデータモデルについて詳しく学ぶために、<a href="https://firebase.google.com/docs/firestore/data-model" target="_blank">Cloud Firestoreドキュメント</a> 内の document と collection について読みましょう。Cloud FirestoreのNoSQLデータモデル、クエリ、およびCloud Firestoreでできるその他のクールなものについて述べられている <a href="https://www.youtube.com/playlist?list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ" target="_blank">great series of videos</a> も見ることができます。</p>
+</aside>
+<h2 is-upgraded>Firestoreにメッセージを追加する</h2>
+<p>このセクションでは、ユーザーがデータベースに新しいメッセージを書き込むための機能を追加します。まず、UI要素（フォームフィールドと送信ボタン）を追加し、次にデータベースにこれらの要素をつなぐコードを追加します。</p>
+<p>まず、<code>cloud_firestore</code>パッケージと<code>dart:async</code> の import を追加します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_06/lib/main.dart" target="_blank">lib/main.dart</a></h3>
+<pre><code>import &#39;dart:async&#39;;                                    // new
+
+import &#39;package:cloud_firestore/cloud_firestore.dart&#39;;  // new
+import &#39;package:firebase_auth/firebase_auth.dart&#39;;
+import &#39;package:firebase_core/firebase_core.dart&#39;;
+import &#39;package:flutter/material.dart&#39;;
+import &#39;package:google_fonts/google_fonts.dart&#39;;
+import &#39;package:provider/provider.dart&#39;;
+
+import &#39;firebase_options.dart&#39;;
+import &#39;src/authentication.dart&#39;;
+import &#39;src/widgets.dart&#39;;</code></pre>
+<p>メッセージフィールドと送信ボタンのUI要素を構築するには、<code>lib/main.dart</code> の下部に新しい stateful widget である <code>GuestBook</code>を追加します 。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_06/lib/main.dart#L199" target="_blank">lib/main.dart</a></h3>
+<pre><code>class GuestBook extends StatefulWidget {
+  const GuestBook({required this.addMessage});
+  final FutureOr&lt;void&gt; Function(String message) addMessage;
+
+  @override
+  _GuestBookState createState() =&gt; _GuestBookState();
+}
+
+class _GuestBookState extends State&lt;GuestBook&gt; {
+  final _formKey = GlobalKey&lt;FormState&gt;(debugLabel: &#39;_GuestBookState&#39;);
+  final _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Form(
+        key: _formKey,
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: &#39;Leave a message&#39;,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return &#39;Enter your message to continue&#39;;
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            StyledButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  await widget.addMessage(_controller.text);
+                  _controller.clear();
+                }
+              },
+              child: Row(
+                children: const [
+                  Icon(Icons.send),
+                  SizedBox(width: 4),
+                  Text(&#39;SEND&#39;),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}</code></pre>
+<p>ここにはいくつかの興味深い点があります。まず、フォームをインスタンス化して、実際にメッセージがコンテンツを含んでいることを upi が検証し、コンテンツがない場合はユーザーにエラーメッセージを表示できるようにします。フォームを検証する方法は、画面では見えないフォームの状態にアクセスする必要があり、そのために<code>GlobalKey</code>を使います 。キーの詳細については、<a href="https://www.youtube.com/watch?v=kn0EOS-ZiIc" target="_blank">Flutter Widgets 101 episode &#34;When to Use Keys&#34;</a>の使用する方法を参照してください。</p>
+<p>また、ウィジェットがレイアウトされている<code>Row</code>、 <code>TextFormField</code>と <code>Row</code> を含んでいる <code>StyledButton</code>に注意してください。また、<code>TextFormField</code>は、<code>Expanded</code>ウィジェットでラップされており、これは<code>TextFormField</code>行の余分なスペースを取ることに注意してください。これが必要な理由をよりよく理解するために、<a href="https://flutter.dev/docs/development/ui/layout/constraints" target="_blank">Understanding constraints</a>を参照してください。</p>
+<p>これで、ユーザーがゲストブックに追加するテキストを入力できるウィジェットができたので、それを画面に表示する必要があります。これを行うには、<code>HomePage</code>の body を編集し、<code>ListView</code>の子の一番下に次の2行を追加します：</p>
+<pre><code>const Header(&#34;What we&#39;ll be doing&#34;),
+const Paragraph(
+  &#39;Join us for a day full of Firebase Workshops and Pizza!&#39;,
+),
+// Add the following two lines.
+const Header(&#39;Discussion&#39;),
+GuestBook(addMessage: (message) =&gt; print(message)),</code></pre>
+<p>これはウィジェットを表示するのに十分ですが、何か便利なことをするのには不十分です。このコードを便利にするために、少し更新しましょう。</p>
+<h3 is-upgraded>アプリのプレビュー</h3>
+<table>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/3454c60868571147.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/393bf52a546e9567.png"></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/c0f8f4de66dc0d04.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/9b5e06ea495ef00d.png"></p>
+</td></tr>
+</table>
+<p>ユーザーがSENDボタンをクリックすると、以下のコードが実行されます。これは、メッセージの入力フィールドの内容をデータベースの<code>guestbook</code>コレクションに追加します。具体的には、 <code>addMessageToGuestBook</code>メソッドは、新しいドキュメント（自動的に生成されたIDを持つ）へのメッセージの内容を<code>guestbook</code>コレクションに追加します。</p>
+<p><code>FirebaseAuth.instance.currentUser.uid</code> は、Firebase認証がログインしているユーザーのすべてのために与える、自動生成されたユニークなIDへの参照であることに注意しましょう。</p>
+<p><code>lib/main.dart</code>ファイルをさらに変更しましょう。<code>addMessageToGuestBook</code>メソッドを追加します。次のステップでは、ユーザーインターフェースとこの機能を一緒につなぎます。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_06/lib/main.dart#L181" target="_blank">lib/main.dart</a></h3>
+<pre><code>class ApplicationState extends ChangeNotifier {
+
+  // Current content of ApplicationState elided ...
+
+  // Add from here
+  Future&lt;DocumentReference&gt; addMessageToGuestBook(String message) {
+    if (_loginState != ApplicationLoginState.loggedIn) {
+      throw Exception(&#39;Must be logged in&#39;);
+    }
+
+    return FirebaseFirestore.instance
+        .collection(&#39;guestbook&#39;)
+        .add(&lt;String, dynamic&gt;{
+      &#39;text&#39;: message,
+      &#39;timestamp&#39;: DateTime.now().millisecondsSinceEpoch,
+      &#39;name&#39;: FirebaseAuth.instance.currentUser!.displayName,
+      &#39;userId&#39;: FirebaseAuth.instance.currentUser!.uid,
+    });
+  }
+  // To here
+}</code></pre>
+<h2 is-upgraded><code>UI</code>をデータベースにつなぐ</h2>
+<p>ユーザーがゲストブックに追加するテキストを入力できるUIがあり、Cloud Firestoreにエントリを追加するためのコードがあります。今、あなたがする必要があるのは、2つを一緒につなぐことです。 <code>lib/main.dart</code>の中で、<code>HomePage</code>ウィジェットを次のように変更します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_06/lib/main.dart#L40" target="_blank">lib/main.dart</a></h3>
+<pre><code>class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(&#39;Firebase Meetup&#39;),
+      ),
+      body: ListView(
+        children: &lt;Widget&gt;[
+          Image.asset(&#39;assets/codelab.png&#39;),
+          const SizedBox(height: 8),
+          const IconAndDetail(Icons.calendar_today, &#39;October 30&#39;),
+          const IconAndDetail(Icons.location_city, &#39;San Francisco&#39;),
+          Consumer&lt;ApplicationState&gt;(
+            builder: (context, appState, _) =&gt; Authentication(
+              email: appState.email,
+              loginState: appState.loginState,
+              startLoginFlow: appState.startLoginFlow,
+              verifyEmail: appState.verifyEmail,
+              signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+              cancelRegistration: appState.cancelRegistration,
+              registerAccount: appState.registerAccount,
+              signOut: appState.signOut,
+            ),
+          ),
+          const Divider(
+            height: 8,
+            thickness: 1,
+            indent: 8,
+            endIndent: 8,
+            color: Colors.grey,
+          ),
+          const Header(&#34;What we&#39;ll be doing&#34;),
+          const Paragraph(
+            &#39;Join us for a day full of Firebase Workshops and Pizza!&#39;,
+          ),
+          // Modify from here
+          Consumer&lt;ApplicationState&gt;(
+            builder: (context, appState, _) =&gt; Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (appState.loginState == ApplicationLoginState.loggedIn) ...[
+                  const Header(&#39;Discussion&#39;),
+                  GuestBook(
+                    addMessage: (message) =&gt;
+                        appState.addMessageToGuestBook(message),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          // To here.
+        ],
+      ),
+    );
+  }
+}</code></pre>
+<p>このステップの開始時に追加した2行を、完全な実装に置き換えました。あなたは再び<code>Consumer<ApplicationState></code>を使用して、レンダリングされているツリーの一部へのアプリケーションの状態を利用できるようにします。これにより、UIでメッセージを入力した人に反応し、それをデータベースに格納します。次のセクションでは、追加されたメッセージがデータベースに格納されているかどうかをテストします。</p>
+<h2 is-upgraded>メッセージの送信をテストする</h2>
+<ol type="1" start="1">
+<li>アプリにサインインしていることを確認します。</li>
+<li>「Hey there!」などのメッセージを入力し、[SEND]をクリックしてください。</li>
+</ol>
+<p>このアクションにより、メッセージがCloud Firestoreデータベースに書き込まれます。ただし、データの取得を実装する必要があるため、実際のFlutterアプリにはまだメッセージが表示されません。次のステップでそれを行います。</p>
+<p>ただし、Firebaseコンソールでは新しく追加されたメッセージを確認できます。</p>
+<p>Firebaseコンソールの<a href="https://console.firebase.google.com/project/_/database" target="_blank">Database dashboard</a>の中で、<code>guestbook</code>コレクションで新しく追加されたメッセージを見るべきです。メッセージを送信し続けると、 guestbookコレクションには次のような多くのドキュメントが含まれます。</p>
+<h3 is-upgraded>Firebaseコンソール</h3>
+<p class="image-container"><img alt="713870af0b3b63c.png" style="width: 601.70px" src="img/713870af0b3b63c.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="メッセージを読む" duration="0">
+        <p>ゲストがデータベースにメッセージを書き込むことができるのは素晴らしいことですが、アプリではまだメッセージを見ることができません。それを直していきましょう！<br><br></p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 is-upgraded>メッセージを同期する</h2>
+<p>メッセージを表示するには、データが変更されたときに発火するリスナーを追加してから、新しいメッセージを表示するUI要素を作成する必要があります。アプリから新しく追加されたメッセージを受け取るコードをアプリケーションの状態に追加します。<br><br><code>GuestBook</code>ウィジェットの値を保持しているクラスは以下のようになります。このクラスは、Cloud Firestoreに保存しているデータの構造化されたビューを公開します。<br><br></p>
+<p><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L225" target="_blank">lib/main.dart</a></p>
+<pre><code>class GuestBookMessage {
+  GuestBookMessage({required this.name, required this.message});
+  final String name;
+  final String message;
+}</code></pre>
+<p><code>ApplicationState</code>の state と getter を定義するセクションに、次の新しい行を追加します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L140" target="_blank">lib/main.dart</a></h3>
+<pre><code>  ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
+  ApplicationLoginState get loginState =&gt; _loginState;
+
+  String? _email;
+  String? get email =&gt; _email;
+
+  // Add from here
+  StreamSubscription&lt;QuerySnapshot&gt;? _guestBookSubscription;
+  List&lt;GuestBookMessage&gt; _guestBookMessages = [];
+  List&lt;GuestBookMessage&gt; get guestBookMessages =&gt; _guestBookMessages;
+  // to here.</code></pre>
+<p>そして最後に、<code>ApplicationState</code> の初期化のセクションで、ユーザーがログインするときにドキュメントコレクションのクエリを発行し、ログアウト時に解除するには、次のように追加します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L105" target="_blank">lib/main.dart</a></h3>
+<pre><code>  Future&lt;void&gt; init() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    FirebaseAuth.instance.userChanges().listen((user) {
+      if (user != null) {
+        _loginState = ApplicationLoginState.loggedIn;
+        // Add from here
+        _guestBookSubscription = FirebaseFirestore.instance
+            .collection(&#39;guestbook&#39;)
+            .orderBy(&#39;timestamp&#39;, descending: true)
+            .snapshots()
+            .listen((snapshot) {
+          _guestBookMessages = [];
+          for (final document in snapshot.docs) {
+            _guestBookMessages.add(
+              GuestBookMessage(
+                name: document.data()[&#39;name&#39;] as String,
+                message: document.data()[&#39;text&#39;] as String,
+              ),
+            );
+          }
+          notifyListeners();
+        });
+        // to here.
+      } else {
+        _loginState = ApplicationLoginState.loggedOut;
+        // Add from here
+        _guestBookMessages = [];
+        _guestBookSubscription?.cancel();
+        // to here.
+      }
+      notifyListeners();
+    });
+  }</code></pre>
+<p>このセクションは重要で、ここでは、あなたが<code>guestbook</code>コレクションにクエリを作成するところで、このコレクションへのクエリの発行と解除を扱います。流れを追うと、<code>guestbook</code>コレクションのメッセージのローカルキャッシュを再構築するところで、後でクエリの解除ができるようにクエリを格納します。ここでは多くのことが行われているので、より明確な理解を得るために何が起こるかをデバッガーで調べる時間を費やす価値があります。</p>
+<p>詳細については、<a href="https://firebase.google.com/docs/firestore/query-data/listen" target="_blank">Cloud Firestore documentation</a>を参照してください。</p>
+<aside class="special"><p>ヒント：より高速な画面更新のために、リスト全体ではなく、変更された文書だけを更新することができます。<a href="https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots" target="_blank">Cloud Firestore documentation</a>で詳細情報が見れます。</p>
+</aside>
+<p><code>GuestBook</code>ウィジェットでは、ユーザーインターフェースにこの変化状態を接続する必要があります。ウィジェットの構成の一部としてメッセージのリストを追加することにより、ウィジェットを変更します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L231" target="_blank">lib/main.dart</a></h3>
+<pre><code>class GuestBook extends StatefulWidget {
+  // Modify the following line
+  const GuestBook({required this.addMessage, required this.messages});
+  final FutureOr&lt;void&gt; Function(String message) addMessage;
+  final List&lt;GuestBookMessage&gt; messages; // new
+
+  @override
+  _GuestBookState createState() =&gt; _GuestBookState();
+}</code></pre>
+<p>次に、<code>build</code> メソッドを次のように変更することで、この新しい設定を<code>_GuestBookState</code>で公開します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L241" target="_blank">lib/main.dart</a></h3>
+<pre><code>class _GuestBookState extends State&lt;GuestBook&gt; {
+  final _formKey = GlobalKey&lt;FormState&gt;(debugLabel: &#39;_GuestBookState&#39;);
+  final _controller = TextEditingController();
+
+  @override
+  // Modify from here
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // to here.
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: &#39;Leave a message&#39;,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return &#39;Enter your message to continue&#39;;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                StyledButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await widget.addMessage(_controller.text);
+                      _controller.clear();
+                    }
+                  },
+                  child: Row(
+                    children: const [
+                      Icon(Icons.send),
+                      SizedBox(width: 4),
+                      Text(&#39;SEND&#39;),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Modify from here
+        const SizedBox(height: 8),
+        for (var message in widget.messages)
+          Paragraph(&#39;${message.name}: ${message.message}&#39;),
+        const SizedBox(height: 8),
+      ],
+      // to here.
+    );
+  }
+}</code></pre>
+<p>buildメソッドの以前の内容を<code>Column</code>ウィジェットでラップして、その後、<code>Column</code>の子の最後尾に、メッセージのリストの中の各メッセージに対して新しい<code>Paragraph</code>を生成するための <a href="https://dart.dev/guides/language/language-tour#collection-operators" target="_blank">collection for</a> を追加します。</p>
+<p>最後に、<code>GuestBook</code>を新しい<code>messages</code>パラメータに正しくつなぐために、<code>HomePage</code>の body を更新する必要があります。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_07/lib/main.dart#L79" target="_blank">lib/main.dart</a></h3>
+<pre><code>Consumer&lt;ApplicationState&gt;(
+  builder: (context, appState, _) =&gt; Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (appState.loginState == ApplicationLoginState.loggedIn) ...[
+        const Header(&#39;Discussion&#39;),
+        GuestBook(
+          addMessage: (message) =&gt;
+              appState.addMessageToGuestBook(message),
+          messages: appState.guestBookMessages, // new
+        ),
+      ],
+    ],
+  ),
+),</code></pre>
+<h2 is-upgraded>同期メッセージをテストする</h2>
+<p>Cloud Firestoreは、データベースに接続しているクライアントのデータを自動的かつ即座に同期します。</p>
+<ol type="1" start="1">
+<li>データベースで以前に作成したメッセージは、アプリに表示されます。新しいメッセージを自由に書いてください。それらはすぐに表示されるはずです。</li>
+<li>ワークスペースを複数のウィンドウまたはタブで開くと、メッセージはタブ間でリアルタイムに同期されます。</li>
+<li><em>（オプション）</em>Firebaseコンソールのデータベースのセクションに直接<em>手動で</em>削除、変更、または新しいメッセージの追加すると、変更はUIに表示されます。</li>
+</ol>
+<p>おめでとう！Cloud Firestore documentをアプリで読んでいます！</p>
+<h3 is-upgraded>アプリケーションのプレビュー</h3>
+<table>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/a26378d2c9ce8904.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/8bf20f6736281f25.png"></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/ea8c4d640fbeefe.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/681f61235f4a73eb.png"></p>
+</td></tr>
+</table>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="基本的なセキュリティルールを設定する" duration="0">
+        <p>最初に、テストモードを使用するようにCloud Firestoreを設定しました。これは、データベースが読み取りと書き込みのために開いていることを意味します。ただし、テストモードは、開発のごく初期の段階でのみ使用する必要があります。ベストプラクティスとして、アプリを開発するときにデータベースのセキュリティルールを設定する必要があります。セキュリティは、アプリの構造と動作に切っても切れないものである必要があります。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>セキュリティルールを使用すると、データベース内の document と collection へのアクセスを制御できます。柔軟なルール構文を使用すると、データベース全体へのすべての書き込みから特定の document の操作まで、あらゆるものに一致するルールを作成できます。</p>
+<p>Cloud FirestoreのセキュリティルールはFirebaseコンソールで作成できます。</p>
+<ol type="1" start="1">
+<li>Firebaseコンソールの [Develop] セクションでは、[Database]をクリックし、[Rules]タブを選択します（または[Rules] タブに直接移動するには<a href="https://console.firebase.google.com/project/_/database/firestore/rules" target="_blank">こちらをクリックしてください</a>）。</li>
+<li>次のデフォルトのセキュリティルールと、公開されているルールに関する警告が表示されます。</li>
+</ol>
+<p class="image-container"><img alt="7767a2d2e64e7275.png" style="width: 601.70px" src="img/7767a2d2e64e7275.png"></p>
+<aside class="special"><p>セキュリティルールについてさらに詳しく学ぶには<a href="https://firebase.google.com/docs/rules" target="_blank">Firebase Security Rules</a> のドキュメントや、この<a href="https://www.youtube.com/watch?v=QEuu9X9L-MU&list=PLl-K7zZEsYLn8h1NyU_OV6dX8mBhH2s_L" target="_blank">YouTube playlist</a> をチェックしてください。</p>
+</aside>
+<h2 is-upgraded>コレクションを特定する</h2>
+<p>まず、アプリがデータを書き込むコレクションを特定します。</p>
+<p><code>match /databases/{database}/documents</code> の中で、保護したいというコレクションを特定します。</p>
+<pre><code>rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /guestbook/{entry} {
+     // You&#39;ll add rules here in the next step.
+  }
+}</code></pre>
+<h2 is-upgraded>セキュリティルールを追加する</h2>
+<p>各 guestbook document のフィールドとして認証UIDを使用したため、これを取得して、 document に書き込もうとしているユーザーの認証UIDが一致することを確認できます。</p>
+<p>以下に示すように、読み取りルールと書き込みルールをルールセットに追加します。</p>
+<pre><code>rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /guestbook/{entry} {
+      allow read: if request.auth.uid != null;
+      allow write:
+        if request.auth.uid == request.resource.data.userId;
+    }
+  }
+}</code></pre>
+<p>これで、 guestbook の場合、サインインしたユーザーのみがメッセージ（どんなメッセージでも！）を読むことができますが、メッセージの作成者のみがメッセージを編集できます。</p>
+<h2 is-upgraded>検証ルールを追加する</h2>
+<p>データ検証を追加して、必要なすべてのフィールドが document に存在することを確認します。</p>
+<pre><code>rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /guestbook/{entry} {
+      allow read: if request.auth.uid != null;
+      allow write:
+      if request.auth.uid == request.resource.data.userId
+          &amp;&amp; &#34;name&#34; in request.resource.data
+          &amp;&amp; &#34;text&#34; in request.resource.data
+          &amp;&amp; &#34;timestamp&#34; in request.resource.data;
+    }
+  }
+}</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ボーナスステップ：学んだことを練習する" duration="0">
+        <h2 is-upgraded>出席者のRSVPステータスを記録する</h2>
+<p>現在、このアプリでは、イベントに興味がある場合にチャットを開始できます。また、誰かが来ているかどうかを知る唯一の方法は、チャットに投稿するかどうかです。整理して、何人の人が来るのかを知らせましょう。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>アプリケーションの状態にいくつかの新機能を追加します。 1つ目は、ログインしているユーザーが参加しているかどうかを指定する機能です。 2番目の機能は、実際に参加している人数のカウンターです。</p>
+<p><code>lib/main.dart</code> の中で、この状態と接続するためのUIコードを有効にするには、accessors sectionに次の行を追加します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_09/lib/main.dart#L190" target="_blank">lib/main.dart</a></h3>
+<pre><code>int _attendees = 0;
+int get attendees =&gt; _attendees;
+
+Attending _attending = Attending.unknown;
+StreamSubscription&lt;DocumentSnapshot&gt;? _attendingSubscription;
+Attending get attending =&gt; _attending;
+set attending(Attending attending) {
+  final userDoc = FirebaseFirestore.instance
+      .collection(&#39;attendees&#39;)
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+  if (attending == Attending.yes) {
+    userDoc.set(&lt;String, dynamic&gt;{&#39;attending&#39;: true});
+  } else {
+    userDoc.set(&lt;String, dynamic&gt;{&#39;attending&#39;: false});
+  }
+}</code></pre>
+<p><code>ApplicationState</code>の中の<code>init</code>メソッドを次のように更新します。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_09/lib/main.dart#L119" target="_blank">lib/main.dart</a></h3>
+<pre><code>  Future&lt;void&gt; init() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Add from here
+    FirebaseFirestore.instance
+        .collection(&#39;attendees&#39;)
+        .where(&#39;attending&#39;, isEqualTo: true)
+        .snapshots()
+        .listen((snapshot) {
+      _attendees = snapshot.docs.length;
+      notifyListeners();
+    });
+    // To here
+
+    FirebaseAuth.instance.userChanges().listen((user) {
+      if (user != null) {
+        _loginState = ApplicationLoginState.loggedIn;
+        _guestBookSubscription = FirebaseFirestore.instance
+            .collection(&#39;guestbook&#39;)
+            .orderBy(&#39;timestamp&#39;, descending: true)
+            .snapshots()
+            .listen((snapshot) {
+          _guestBookMessages = [];
+          for (final document in snapshot.docs) {
+            _guestBookMessages.add(
+              GuestBookMessage(
+                name: document.data()[&#39;name&#39;] as String,
+                message: document.data()[&#39;text&#39;] as String,
+              ),
+            );
+          }
+          notifyListeners();
+        });
+        // Add from here
+        _attendingSubscription = FirebaseFirestore.instance
+            .collection(&#39;attendees&#39;)
+            .doc(user.uid)
+            .snapshots()
+            .listen((snapshot) {
+          if (snapshot.data() != null) {
+            if (snapshot.data()![&#39;attending&#39;] as bool) {
+              _attending = Attending.yes;
+            } else {
+              _attending = Attending.no;
+            }
+          } else {
+            _attending = Attending.unknown;
+          }
+          notifyListeners();
+        });
+        // to here
+      } else {
+        _loginState = ApplicationLoginState.loggedOut;
+        _guestBookMessages = [];
+        _guestBookSubscription?.cancel();
+        _attendingSubscription?.cancel(); // new
+      }
+      notifyListeners();
+    });
+  }</code></pre>
+<p>上記は、出席者の数を調べるために常時監視しているクエリと、ユーザーが出席しているかどうかを調べるためにユーザーがログインしている間だけアクティブになる2番目のクエリを追加します。次に、<code>GuestBookMessage</code>宣言の後に以下の enumeration を追加します：</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_09/lib/main.dart#L279" target="_blank">lib/main.dart</a></h3>
+<pre><code>enum Attending { yes, no, unknown }</code></pre>
+<p>次に、古いラジオボタンのように機能する新しいウィジェットを定義します。「はい」も「いいえ」も選択されていない不確定な状態で始まりますが、ユーザーが出席するかどうかを選択すると、そのオプションが塗りつぶされたボタンで強調表示され、他のオプションがフラットレンダリングで OFF の状態にします。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_09/lib/main.dart#L355" target="_blank">lib/main.dart</a></h3>
+<pre><code>class YesNoSelection extends StatelessWidget {
+  const YesNoSelection({required this.state, required this.onSelection});
+  final Attending state;
+  final void Function(Attending selection) onSelection;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (state) {
+      case Attending.yes:
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(elevation: 0),
+                onPressed: () =&gt; onSelection(Attending.yes),
+                child: const Text(&#39;YES&#39;),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: () =&gt; onSelection(Attending.no),
+                child: const Text(&#39;NO&#39;),
+              ),
+            ],
+          ),
+        );
+      case Attending.no:
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              TextButton(
+                onPressed: () =&gt; onSelection(Attending.yes),
+                child: const Text(&#39;YES&#39;),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(elevation: 0),
+                onPressed: () =&gt; onSelection(Attending.no),
+                child: const Text(&#39;NO&#39;),
+              ),
+            ],
+          ),
+        );
+      default:
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              StyledButton(
+                onPressed: () =&gt; onSelection(Attending.yes),
+                child: const Text(&#39;YES&#39;),
+              ),
+              const SizedBox(width: 8),
+              StyledButton(
+                onPressed: () =&gt; onSelection(Attending.no),
+                child: const Text(&#39;NO&#39;),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+}</code></pre>
+<p>次は、<code>HomePage</code>の<code>YesNoSelection</code>を利用するbuildメソッドを更新する必要があります。そしてこれは、ログインしたユーザーが出席するかどうかを選択できます。また、このイベントの参加者数も表示されます。</p>
+<h3 is-upgraded><a href="https://github.com/flutter/codelabs/blob/master/firebase-get-to-know-flutter/step_09/lib/main.dart#L79" target="_blank">lib/main.dart</a></h3>
+<pre><code>Consumer&lt;ApplicationState&gt;(
+  builder: (context, appState, _) =&gt; Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Add from here
+      if (appState.attendees &gt;= 2)
+        Paragraph(&#39;${appState.attendees} people going&#39;)
+      else if (appState.attendees == 1)
+        const Paragraph(&#39;1 person going&#39;)
+      else
+        const Paragraph(&#39;No one going&#39;),
+      // To here.
+      if (appState.loginState == ApplicationLoginState.loggedIn) ...[
+        // Add from here
+        YesNoSelection(
+          state: appState.attending,
+          onSelection: (attending) =&gt; appState.attending = attending,
+        ),
+        // To here.
+        const Header(&#39;Discussion&#39;),
+        GuestBook(
+          addMessage: (message) =&gt;
+              appState.addMessageToGuestBook(message),
+          messages: appState.guestBookMessages,
+        ),
+      ],
+    ],
+  ),
+),</code></pre>
+<h2 is-upgraded>ルールを追加する</h2>
+<p>すでにいくつかのルールが設定されているため、ボタンを使用して追加する新しいデータは拒否されます。<code>attendees</code> collection への追加を許可するルールを更新する必要があります。</p>
+<p><code>attendees</code> collection のために、 document 名として認証UIDを使用するので、あなたは UID を取得して、同じ人が書いている document かどうか、送信者の<code>UID</code> で確認します。参加者リストは誰でも読むことができますが（プライベートデータでないため）、更新できるのは作成者だけです。</p>
+<pre><code>rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ... //
+    match /attendees/{userId} {
+      allow read: if true;
+      allow write: if request.auth.uid == userId;
+    }
+  }
+}</code></pre>
+<h2 is-upgraded>検証ルールを追加する</h2>
+<p>データ検証を追加して、必要なすべてのフィールドが document に存在することを確認します。</p>
+<pre><code>rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ... //
+    match /attendees/{userId} {
+      allow read: if true;
+      allow write: if request.auth.uid == userId
+          &amp;&amp; &#34;attending&#34; in request.resource.data;
+
+    }
+  }
+}</code></pre>
+<p><em>（オプション）</em>これで、ボタンをクリックした結果を表示することができます。 FirebaseコンソールでCloud Firestoreダッシュボードに移動します。</p>
+<h3 is-upgraded>アプリのプレビュー</h3>
+<table>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/c62416352b641c75.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/71935c62efd2aeb5.png"></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/73245a514a97e5a6.png"></p>
+</td><td colspan="1" rowspan="1"><p class="image-container"><img style="width: 601.70px" src="img/ace882b7591fe799.png"></p>
+</td></tr>
+</table>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="おめでとう！" duration="0">
+        <p>Firebaseを使用して、インタラクティブなリアルタイムWebアプリケーションを構築しました。</p>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/wUSkeTaBonA?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 is-upgraded>これまでの内容</h2>
+<ul>
+<li>Firebase認証</li>
+<li>Cloud Firestore</li>
+<li>Firebase Security Rules</li>
+</ul>
+<h2 is-upgraded>次のステップ</h2>
+<ul>
+<li>他のFirebase製品についてもっと知りたいですか？ユーザーがアップロードした画像ファイルを保存したいですか？または、ユーザーに通知を送信しますか？<a href="https://firebase.google.com/" target="_blank">Firebase documentation</a> をチェックしましょう。 Firebase用のFlutterプラグインについて詳しく知りたいですか？詳細については<a href="https://firebase.flutter.dev/" target="_blank"> FlutterFire</a> を参照してください。</li>
+<li>Cloud Firestoreについてもっと知りたいですか？サブコレクションとトランザクションについて知りたいですか？Cloud Firestore を深く掘り下げる CodeLab は<a href="https://codelabs.developers.google.com/codelabs/firestore-web/#0" target="_blank"> Cloud Firestore web codelab</a>を見てください。もしくは、この<a href="https://www.youtube.com/watch?v=v_hR4K4auoQ&list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ&index=2&t=0s" target="_blank"> YouTube series to get to know Cloud Firestore</a>をチェックしてください！</li>
+</ul>
+<iframe class="youtube-video" src="https://www.youtube.com/embed/v_hR4K4auoQ?rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 is-upgraded>もっと詳しく知る</h2>
+<ul>
+<li>Firebaseサイト： <a href="https://firebase.google.com/" target="_blank">firebase.google.com</a></li>
+<li>Flutterサイト： <a href="https://flutter.dev/" target="_blank">flutter.dev</a></li>
+<li>FlutterFire Firebase Flutter widgets： <a href="https://firebase.flutter.dev/" target="_blank">firebase.flutter.dev</a></li>
+<li><a href="https://www.youtube.com/user/Firebase/featured" target="_blank">Firebase YouTube channel</a></li>
+<li><a href="https://www.youtube.com/FlutterDev" target="_blank">Flutter YouTube channel</a></li>
+</ul>
+<h2 is-upgraded>どうでしたか？</h2>
+<p>フィードバックをお待ちしております。 <a href="https://forms.gle/vHHkvaGkQbmUm5di9" target="_blank">ここで</a>（非常に）短いフォームに必要事項を記入してください。</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
